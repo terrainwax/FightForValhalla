@@ -4,12 +4,13 @@ using UnityEngine;
 
 namespace BeardedManStudios.Forge.Networking.Generated
 {
-	[GeneratedRPC("{\"types\":[[\"int\"][\"string\"]]")]
-	[GeneratedRPCVariableNames("{\"types\":[[\"ItemId\"][\"PlayerName\"]]")]
+	[GeneratedRPC("{\"types\":[[\"int\"][\"int\"][\"string\"]]")]
+	[GeneratedRPCVariableNames("{\"types\":[[\"health\"][\"health\"][\"PlayerName\"]]")]
 	public abstract partial class PlayerBehavior : NetworkBehavior
 	{
 		public const byte RPC_TAKE_DAMAGE = 0 + 5;
-		public const byte RPC_SETUP_PLAYER = 1 + 5;
+		public const byte RPC_DIE = 1 + 5;
+		public const byte RPC_SETUP_PLAYER = 2 + 5;
 		
 		public PlayerNetworkObject networkObject = null;
 
@@ -24,6 +25,7 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 			base.SetupHelperRpcs(networkObject);
 			networkObject.RegisterRpc("TakeDamage", TakeDamage, typeof(int));
+			networkObject.RegisterRpc("Die", Die, typeof(int));
 			networkObject.RegisterRpc("SetupPlayer", SetupPlayer, typeof(string));
 
 			networkObject.onDestroy += DestroyGameObject;
@@ -103,9 +105,14 @@ namespace BeardedManStudios.Forge.Networking.Generated
 
 		/// <summary>
 		/// Arguments:
-		/// int ItemId
+		/// int health
 		/// </summary>
 		public abstract void TakeDamage(RpcArgs args);
+		/// <summary>
+		/// Arguments:
+		/// int health
+		/// </summary>
+		public abstract void Die(RpcArgs args);
 		/// <summary>
 		/// Arguments:
 		/// string PlayerName

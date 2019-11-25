@@ -20,7 +20,8 @@ public class Spawnplayer : MonoBehaviour
         //Find a random spawnpoint from the list
         Vector3 randomSpawnPosition = spawnPoints[UnityEngine.Random.Range(0, spawnPoints.Count)].position;
         //Instantiate the player
-        NetworkManager.Instance.InstantiatePlayer(position: randomSpawnPosition);
+        var player = NetworkManager.Instance.InstantiatePlayer(position: randomSpawnPosition);
+        player.transform.position = randomSpawnPosition;
     }
 
     // Update is called once per frame

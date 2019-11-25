@@ -13,6 +13,12 @@ public class NetworkPlayer : PlayerBehavior
 
     public event System.Action<RpcArgs> TakeDamageEvent;
     public event System.Action<RpcArgs> SetupPlayerEvent;
+    public event System.Action<RpcArgs> DieEvent;
+    [SerializeField]
+    //the health system script
+    private HealthSystem hp;
+
+    private bool canMove = true;
     //also make an event for the network start as some components need that as well
     public event System.Action NetworkStartEvent;
 
@@ -24,6 +30,31 @@ public class NetworkPlayer : PlayerBehavior
 
     //The player's camera
     private Camera playerCamera;
+
+    void Start()
+    {
+        //Get the HP system and it's events, as we need logic based on that.
+        //Eg we can't move if the player is dead
+        hp.OnPlayerDie += Hp_OnPlayerDie;
+        hp.OnPlayerRespawn += Hp_OnPlayerRespawn;
+    }
+
+    private void Hp_OnPlayerRespawn()
+    {
+        //the player can move again on respawn
+        canMove = true;
+    }
+
+    /// <summary>
+    /// Called from OnPlayerDie from the HealthSystem
+    /// Force stop the player and make him unable to move
+    /// </summary>
+    /// <param name="attackerName"></param>
+    private void Hp_OnPlayerDie(string attackerName)
+    {
+        canMove = false;
+    }
+
 
     public GameObject PlayerModel
     {
@@ -133,5 +164,19 @@ public class NetworkPlayer : PlayerBehavior
         {
             SetupPlayerEvent(args);
         }
+    }
+
+    public override void Die(RpcArgs args)
+    {
+        if (DieEvent != null)
+        {
+            DieEvent(args);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        hp.OnPlayerDie -= Hp_OnPlayerDie;
+        hp.OnPlayerRespawn -= Hp_OnPlayerRespawn;
     }
 }
